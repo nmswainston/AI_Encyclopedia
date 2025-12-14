@@ -419,7 +419,7 @@ export function checkQuality(script: Script): QualityReport {
     id: '7.2',
     category: 'Consistency & Trust Signals',
     description: 'Front matter fields are complete and accurate',
-    passed: meta.title && meta.summary && meta.level && meta.date && meta.status,
+    passed: !!(meta.title && meta.summary && meta.level && meta.date && meta.status),
     message: !meta.date ? 'Date is missing' : !meta.status ? 'Status is missing' : undefined,
     suggestion: 'Ensure all required frontmatter fields are present'
   });

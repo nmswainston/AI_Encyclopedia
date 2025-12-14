@@ -525,7 +525,6 @@ body {
   font-size: 0.8125rem;
   flex-shrink: 0;
   padding-top: var(--spacing-xs);
-  border-top: 1px solid var(--color-border);
 }
 
 .script-level,
@@ -1985,12 +1984,17 @@ body {
   align-items: center;
   gap: var(--spacing-xs);
   padding: 0.375rem 0.75rem;
-  background: var(--color-bg-secondary);
   border-radius: var(--radius-md);
   color: var(--color-text-secondary);
   font-weight: 500;
   border: 1px solid var(--color-border);
   transition: all var(--transition-fast);
+}
+
+/* Default learning-path-level style - only applies when badge-level class is not present */
+.learning-path-level:not([class*="badge-level-"]),
+.learning-path-level:not(.badge-level-beginner):not(.badge-level-intermediate):not(.badge-level-advanced) {
+  background: var(--color-bg-secondary);
 }
 
 .learning-path-steps {
