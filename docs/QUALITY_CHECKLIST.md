@@ -24,11 +24,11 @@ npm run check:quality --verbose
 ### Programmatic Usage
 
 ```typescript
-import { checkQuality, checkAllQuality } from './src/lib/qualityChecker';
+import { checkQuality } from './src/lib/qualityChecker';
 import { getAllScripts } from './src/lib/content';
 
 const scripts = getAllScripts();
-const reports = checkAllQuality(scripts);
+const reports = scripts.map(script => checkQuality(script));
 ```
 
 ## Checklist Categories

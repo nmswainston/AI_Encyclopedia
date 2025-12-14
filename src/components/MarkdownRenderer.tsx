@@ -34,7 +34,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
       remarkPlugins={[remarkGfm, remarkMath]}
       rehypePlugins={[rehypeKatex, rehypeRaw]}
       components={{
-        code({ node, inline, className, children, ...props }: any) {
+        code({ node: _node, inline, className, children, ...props }: any) {
           const match = /language-(\w+)/.exec(className || '');
           const codeString = String(children).replace(/\n$/, '');
           const codeId = `code-${Math.random().toString(36).substr(2, 9)}`;
@@ -81,7 +81,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
           );
         },
         // Add IDs to headings for TOC
-        h1({ node, children, ...props }: any) {
+        h1({ node: _node, children, ...props }: any) {
           const id = String(children)
             .toLowerCase()
             .replace(/[^\w\s-]/g, '')
@@ -90,7 +90,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             .trim();
           return <h1 id={id} {...props}>{children}</h1>;
         },
-        h2({ node, children, ...props }: any) {
+        h2({ node: _node, children, ...props }: any) {
           const id = String(children)
             .toLowerCase()
             .replace(/[^\w\s-]/g, '')
@@ -99,7 +99,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             .trim();
           return <h2 id={id} {...props}>{children}</h2>;
         },
-        h3({ node, children, ...props }: any) {
+        h3({ node: _node, children, ...props }: any) {
           const id = String(children)
             .toLowerCase()
             .replace(/[^\w\s-]/g, '')
@@ -108,7 +108,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             .trim();
           return <h3 id={id} {...props}>{children}</h3>;
         },
-        h4({ node, children, ...props }: any) {
+        h4({ node: _node, children, ...props }: any) {
           const id = String(children)
             .toLowerCase()
             .replace(/[^\w\s-]/g, '')
@@ -117,7 +117,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             .trim();
           return <h4 id={id} {...props}>{children}</h4>;
         },
-        h5({ node, children, ...props }: any) {
+        h5({ node: _node, children, ...props }: any) {
           const id = String(children)
             .toLowerCase()
             .replace(/[^\w\s-]/g, '')
@@ -126,11 +126,10 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             .trim();
           return <h5 id={id} {...props}>{children}</h5>;
         },
-        h6({ node, children, ...props }: any) {
+        h6({ node: _node, children, ...props }: any) {
           const id = String(children)
             .toLowerCase()
             .replace(/[^\w\s-]/g, '')
-            .replace(/\s+/g, '-')
             .replace(/\s+/g, '-')
             .replace(/-+/g, '-')
             .trim();
