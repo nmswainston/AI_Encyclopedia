@@ -23,50 +23,6 @@ export interface QualityReport {
  * Implements the 8-category quality checklist for knowledgebase entries
  */
 
-function parseFrontmatter(content: string): { data: Record<string, any>, content: string } {
-  const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/;
-  const match = content.match(frontmatterRegex);
-  
-  if (!match) {
-    return { data: {}, content };
-  }
-
-  const [, frontmatter, body] = match;
-  const data: Record<string, any> = {};
-  
-  frontmatter.split('\n').forEach(line => {
-    const trimmed = line.trim();
-    if (!trimmed) return;
-    
-    const colonIndex = trimmed.indexOf(':');
-    if (colonIndex === -1) return;
-    
-    const key = trimmed.slice(0, colonIndex).trim();
-    let value = trimmed.slice(colonIndex + 1).trim();
-    
-    if (value.startsWith('[') && value.endsWith(']')) {
-      const arrayContent = value.slice(1, -1);
-      data[key] = arrayContent
-        .split(',')
-        .map(item => item.trim().replace(/^["']|["']$/g, ''))
-        .filter(item => item.length > 0);
-    } else {
-      if ((value.startsWith('"') && value.endsWith('"')) || 
-          (value.startsWith("'") && value.endsWith("'"))) {
-        value = value.slice(1, -1);
-      }
-      
-      if (!isNaN(Number(value)) && value.trim() !== '' && !isNaN(parseFloat(value))) {
-        data[key] = Number(value);
-      } else {
-        data[key] = value;
-      }
-    }
-  });
-  
-  return { data, content: body.trim() };
-}
-
 function extractHeadings(content: string): string[] {
   const headingRegex = /^#{1,6}\s+(.+)$/gm;
   const matches = content.matchAll(headingRegex);
@@ -74,17 +30,17 @@ function extractHeadings(content: string): string[] {
 }
 
 function extractLinks(content: string): string[] {
-  const linkRegex = /\[([^\]]+)\]\([^\)]+\)/g;
+  const linkRegex = /\[([^\]]+)\]\([^)]+\)/g;
   const matches = content.matchAll(linkRegex);
   return Array.from(matches, m => m[1].trim());
 }
 
 function hasMath(content: string): boolean {
-  return /(\$\$?[^\$]+\$\$?|\\\[[^\]]+\\\]|\\\([^\)]+\\\))/.test(content);
+  return /(\$\$?[^$]+\$\$?|\\\[[^\]]+\\\]|\\\([^)]+\\\))/.test(content);
 }
 
 function hasFormulas(content: string): boolean {
-  return /(\$\$[^\$]+\$\$|\\\[[^\]]+\\\])/.test(content);
+  return /(\$\$[^$]+\$\$|\\\[[^\]]+\\\])/.test(content);
 }
 
 function wordCount(text: string): number {
@@ -500,8 +456,4 @@ export function checkQuality(script: Script): QualityReport {
     passed,
     total
   };
-}
-
-export function checkAllQuality(scripts: Script[]): QualityReport[] {
-  return scripts.map(script => checkQuality(script));
 }
