@@ -311,7 +311,8 @@ body {
 
 .library-content {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  /* Fixed sidebar width + flexible content area to prevent layout shift */
+  grid-template-columns: 280px minmax(0, 1fr);
   gap: var(--spacing-xl);
   align-items: start;
   /* create a slightly softer content well against the app background */
