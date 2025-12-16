@@ -3,7 +3,6 @@
 const BOOKMARKS_KEY = 'ai-encyclopedia-bookmarks';
 const READING_HISTORY_KEY = 'ai-encyclopedia-history';
 const FONT_SIZE_KEY = 'ai-encyclopedia-font-size';
-const READING_MODE_KEY = 'ai-encyclopedia-reading-mode';
 
 export function getBookmarks(): string[] {
   try {
@@ -61,13 +60,6 @@ export function getHistory(): Array<{ slug: string; title: string; timestamp: nu
   }
 }
 
-export function clearHistory(): void {
-  try {
-    localStorage.removeItem(READING_HISTORY_KEY);
-  } catch {
-    // Ignore errors
-  }
-}
 
 export function getFontSize(): number {
   try {
@@ -86,19 +78,4 @@ export function setFontSize(size: number): void {
   }
 }
 
-export function getReadingMode(): boolean {
-  try {
-    const stored = localStorage.getItem(READING_MODE_KEY);
-    return stored === 'true';
-  } catch {
-    return false;
-  }
-}
-
-export function setReadingMode(enabled: boolean): void {
-  try {
-    localStorage.setItem(READING_MODE_KEY, enabled.toString());
-  } catch {
-    // Ignore errors
-  }
-}
+// Reading mode has been removed; no getters/setters needed.

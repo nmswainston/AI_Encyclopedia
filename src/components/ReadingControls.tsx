@@ -1,29 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Minus, Plus, Maximize2, Minimize2 } from 'lucide-react';
-import { getFontSize, setFontSize as saveFontSize, getReadingMode, setReadingMode as saveReadingMode } from '../lib/storage';
+import { Minus, Plus } from 'lucide-react';
+import { getFontSize, setFontSize as saveFontSize } from '../lib/storage';
 
-interface ReadingControlsProps {
-  onReadingModeChange?: (enabled: boolean) => void;
-}
-
-export function ReadingControls({ onReadingModeChange }: ReadingControlsProps) {
-  const [fontSize, setFontSizeState] = useState(16);
-  const [readingMode, setReadingModeState] = useState(false);
-
-  useEffect(() => {
-    setFontSizeState(getFontSize());
-    setReadingModeState(getReadingMode());
-  }, []);
+export function ReadingControls() {
+  const [fontSize, setFontSizeState] = useState(() => getFontSize());
 
   useEffect(() => {
     document.documentElement.style.setProperty('--reading-font-size', `${fontSize}px`);
   }, [fontSize]);
-
-  useEffect(() => {
-    if (onReadingModeChange) {
-      onReadingModeChange(readingMode);
-    }
-  }, [readingMode, onReadingModeChange]);
 
   const decreaseFont = () => {
     const newSize = Math.max(12, fontSize - 2);
@@ -37,12 +21,6 @@ export function ReadingControls({ onReadingModeChange }: ReadingControlsProps) {
     saveFontSize(newSize);
   };
 
-  const toggleReadingMode = () => {
-    const newMode = !readingMode;
-    setReadingModeState(newMode);
-    saveReadingMode(newMode);
-  };
-
   return (
     <div className="reading-controls">
       <div className="font-size-controls">
@@ -52,7 +30,7 @@ export function ReadingControls({ onReadingModeChange }: ReadingControlsProps) {
           aria-label="Decrease font size"
           disabled={fontSize <= 12}
         >
-          <Minus size={16} />
+          <Minus size={16} aria-hidden="true" />
         </button>
         <span className="font-size-display">{fontSize}px</span>
         <button
@@ -61,17 +39,9 @@ export function ReadingControls({ onReadingModeChange }: ReadingControlsProps) {
           aria-label="Increase font size"
           disabled={fontSize >= 24}
         >
-          <Plus size={16} />
+          <Plus size={16} aria-hidden="true" />
         </button>
       </div>
-      <button
-        onClick={toggleReadingMode}
-        className="control-button reading-mode-button"
-        aria-label={readingMode ? 'Exit reading mode' : 'Enter reading mode'}
-        title={readingMode ? 'Exit reading mode' : 'Enter reading mode'}
-      >
-        {readingMode ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
-      </button>
     </div>
   );
 }

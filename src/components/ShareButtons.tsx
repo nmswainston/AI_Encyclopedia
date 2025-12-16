@@ -17,8 +17,8 @@ export function ShareButtons({ url, title, summary }: ShareButtonsProps) {
       await navigator.clipboard.writeText(fullUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy link:', err);
+    } catch {
+      // Silently ignore clipboard errors (e.g. unsupported browser)
     }
   };
 
@@ -26,16 +26,16 @@ export function ShareButtons({ url, title, summary }: ShareButtonsProps) {
     <div className="share-buttons">
       <span className="share-label">Share:</span>
       <FacebookShareButton url={fullUrl} hashtag="#AI">
-        <Facebook size={18} />
+        <Facebook size={18} aria-hidden="true" />
       </FacebookShareButton>
       <TwitterShareButton url={fullUrl} title={title}>
-        <Twitter size={18} />
+        <Twitter size={18} aria-hidden="true" />
       </TwitterShareButton>
       <LinkedinShareButton url={fullUrl} title={title} summary={summary}>
-        <Linkedin size={18} />
+        <Linkedin size={18} aria-hidden="true" />
       </LinkedinShareButton>
       <EmailShareButton url={fullUrl} subject={title} body={summary}>
-        <Mail size={18} />
+        <Mail size={18} aria-hidden="true" />
       </EmailShareButton>
       <button
         onClick={handleCopyLink}
@@ -43,7 +43,7 @@ export function ShareButtons({ url, title, summary }: ShareButtonsProps) {
         aria-label="Copy link"
         title="Copy link"
       >
-        {copied ? '✓' : <LinkIcon size={18} />}
+        {copied ? '✓' : <LinkIcon size={18} aria-hidden="true" />}
       </button>
     </div>
   );

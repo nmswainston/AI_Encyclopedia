@@ -9,7 +9,8 @@ import { ScriptMetaSchema, type Script } from "./scriptSchema";
  */
 
 const scriptsGlob = import.meta.glob("../content/scripts/*.md", {
-  as: "raw",
+  query: "?raw",
+  import: "default",
   eager: true,
 });
 
@@ -22,8 +23,12 @@ function filenameToSlug(pathname: string): string {
 /**
  * Browser-compatible frontmatter parser.
  * Parses YAML frontmatter between --- markers without Node.js Buffer/fs dependencies.
+ * 
+ * Note: `data` uses `unknown` instead of strict types because YAML frontmatter
+ * can contain arbitrary values. The data is validated against ScriptMetaSchema
+ * after parsing, which provides type safety.
  */
-function parseFrontmatter(content: string): { data: Record<string, any>, content: string } {
+function parseFrontmatter(content: string): { data: Record<string, unknown>, content: string } {
   const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/;
   const match = content.match(frontmatterRegex);
   
@@ -32,7 +37,7 @@ function parseFrontmatter(content: string): { data: Record<string, any>, content
   }
 
   const [, frontmatter, body] = match;
-  const data: Record<string, any> = {};
+  const data: Record<string, unknown> = {};
   
   // Simple YAML parser for our use case
   frontmatter.split('\n').forEach(line => {
@@ -91,10 +96,12 @@ function buildAllScripts(): Script[] {
 
     const parsed = ScriptMetaSchema.safeParse(data);
     if (!parsed.success) {
-      console.error(`Frontmatter invalid for: ${slug}`);
-      console.error('Parsed data:', JSON.stringify(data, null, 2));
-      console.error('Validation errors:', parsed.error.flatten());
-      console.error('Full error:', parsed.error.format());
+      if (import.meta.env.DEV) {
+        console.error(`Frontmatter invalid for: ${slug}`);
+        console.error('Parsed data:', JSON.stringify(data, null, 2));
+        console.error('Validation errors:', parsed.error.flatten());
+        console.error('Full error:', parsed.error.format());
+      }
       throw new Error(`Invalid frontmatter in ${slug}.md`);
     }
 

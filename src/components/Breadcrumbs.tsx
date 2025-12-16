@@ -11,7 +11,7 @@ export function Breadcrumbs({ script }: BreadcrumbsProps) {
     return (
       <nav className="breadcrumbs">
         <Link to="/" className="breadcrumb-item">
-          <Home size={16} />
+          <Home size={16} aria-hidden="true" />
           <span>Home</span>
         </Link>
       </nav>
@@ -21,12 +21,12 @@ export function Breadcrumbs({ script }: BreadcrumbsProps) {
   return (
     <nav className="breadcrumbs" aria-label="Breadcrumb">
       <Link to="/" className="breadcrumb-item">
-        <Home size={16} />
+        <Home size={16} aria-hidden="true" />
         <span>Home</span>
       </Link>
       {script.meta.category && (
         <>
-          <ChevronRight size={16} className="breadcrumb-separator" />
+          <ChevronRight size={16} className="breadcrumb-separator" aria-hidden="true" />
           <span className="breadcrumb-item breadcrumb-category">{script.meta.category}</span>
         </>
       )}

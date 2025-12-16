@@ -12,13 +12,15 @@ export function CategoryFilter({ categories, selectedCategory, onCategoryChange 
   return (
     <div className="category-filter">
       <h3 className="filter-title">
-        <Folder size={18} />
+        <Folder size={18} aria-hidden="true" />
         Categories
       </h3>
       <div className="category-list">
         <button
           className={`category-item ${selectedCategory === null ? 'active' : ''}`}
           onClick={() => onCategoryChange(null)}
+          aria-pressed={selectedCategory === null}
+          type="button"
         >
           All Categories
         </button>
@@ -27,6 +29,8 @@ export function CategoryFilter({ categories, selectedCategory, onCategoryChange 
             key={category}
             className={`category-item ${selectedCategory === category ? 'active' : ''}`}
             onClick={() => onCategoryChange(category)}
+            aria-pressed={selectedCategory === category}
+            type="button"
           >
             {category}
           </button>

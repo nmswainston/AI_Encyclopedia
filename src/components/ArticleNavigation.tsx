@@ -13,10 +13,10 @@ export function ArticleNavigation({ currentSlug }: ArticleNavigationProps) {
   if (!previous && !next) return null;
 
   return (
-    <nav className="article-navigation">
+    <nav className="article-navigation" aria-label="Article navigation">
       {previous ? (
         <Link to={`/scripts/${previous.slug}`} className="nav-link nav-prev">
-          <ChevronLeft size={20} />
+          <ChevronLeft size={20} aria-hidden="true" />
           <div>
             <span className="nav-label">Previous</span>
             <span className="nav-title">{previous.meta.title}</span>
@@ -32,7 +32,7 @@ export function ArticleNavigation({ currentSlug }: ArticleNavigationProps) {
             <span className="nav-label">Next</span>
             <span className="nav-title">{next.meta.title}</span>
           </div>
-          <ChevronRight size={20} />
+          <ChevronRight size={20} aria-hidden="true" />
         </Link>
       ) : (
         <div className="nav-link nav-next nav-disabled" />

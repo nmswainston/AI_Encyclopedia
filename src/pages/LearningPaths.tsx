@@ -1,21 +1,19 @@
 import { getAllLearningPaths } from '../lib/learningPaths';
 import { LearningPathCard } from '../components/LearningPathCard';
 import { BookOpen } from 'lucide-react';
+import { PageHeader } from '../components/PageHeader';
 
 export function LearningPaths() {
   const paths = getAllLearningPaths();
 
   return (
     <>
-      <header className="learning-paths-header">
-        <BookOpen size={32} />
-        <div>
-          <h1>Learning Paths</h1>
-          <p className="learning-paths-description">
-            Curated sequences of articles to guide your learning journey
-          </p>
-        </div>
-      </header>
+      <PageHeader
+        eyebrow="Programs"
+        title="Learning Paths"
+        description="Curated sequences of articles to guide your learning journey."
+        icon={<BookOpen size={32} />}
+      />
 
       <div className="learning-paths-grid">
         {paths.map(path => (

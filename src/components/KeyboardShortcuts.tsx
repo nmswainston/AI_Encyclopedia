@@ -3,10 +3,9 @@ import { useNavigate } from 'react-router-dom';
 
 interface KeyboardShortcutsProps {
   onSearchFocus?: () => void;
-  onReadingModeToggle?: () => void;
 }
 
-export function KeyboardShortcuts({ onSearchFocus, onReadingModeToggle }: KeyboardShortcutsProps) {
+export function KeyboardShortcuts({ onSearchFocus }: KeyboardShortcutsProps) {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,14 +28,6 @@ export function KeyboardShortcuts({ onSearchFocus, onReadingModeToggle }: Keyboa
         }
       }
 
-      // Cmd/Ctrl + /: Toggle reading mode
-      if ((e.metaKey || e.ctrlKey) && e.key === '/') {
-        e.preventDefault();
-        if (onReadingModeToggle) {
-          onReadingModeToggle();
-        }
-      }
-
       // Escape: Go back or clear search
       if (e.key === 'Escape') {
         if (window.location.pathname !== '/') {
@@ -56,7 +47,7 @@ export function KeyboardShortcuts({ onSearchFocus, onReadingModeToggle }: Keyboa
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [navigate, onSearchFocus, onReadingModeToggle]);
+  }, [navigate, onSearchFocus]);
 
   return null;
 }

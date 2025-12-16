@@ -5,6 +5,7 @@ import { ScriptCard } from '../components/ScriptCard';
 import { TagFilter } from '../components/TagFilter';
 import { CategoryFilter } from '../components/CategoryFilter';
 import { KeyboardShortcuts } from '../components/KeyboardShortcuts';
+import { PageHeader } from '../components/PageHeader';
 import { searchScripts, getAllCategories, getAllScripts } from '../lib/content';
 import { getBookmarks, getHistory } from '../lib/storage';
 
@@ -26,9 +27,10 @@ export function Library() {
   const [showBookmarks, setShowBookmarks] = useState(false);
   const [showRecent, setShowRecent] = useState(false);
 
-  const allScripts = useMemo(() => getAllScripts(), []);
+  // getAllScripts() returns the same array reference (module-level const)
+  const allScripts = getAllScripts();
 
-  // Get all unique tags
+  // Get all unique tags - memoized for performance
   const allTags = useMemo(() => {
     const tagSet = new Set<string>();
     allScripts.forEach(script => {
@@ -37,7 +39,8 @@ export function Library() {
     return Array.from(tagSet).sort();
   }, [allScripts]);
 
-  const allCategories = useMemo(() => getAllCategories(), []);
+  // getAllCategories() is computed from the same const array, so no memoization needed
+  const allCategories = getAllCategories();
 
   // Filter scripts based on search, tags, and category
   const filteredScripts = useMemo(() => {
@@ -154,28 +157,34 @@ export function Library() {
   return (
     <>
       <KeyboardShortcuts onSearchFocus={handleFocusSearch} />
-      <header>
-        <div className="search-bar">
-          <Search size={20} className="search-icon" />
-          <input
-            ref={searchInputRef}
-            type="text"
-            placeholder="Search articles (Cmd/Ctrl+K)..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ paddingRight: searchQuery ? '3rem' : '1rem' }}
-          />
-          {searchQuery && (
-            <button
-              className="clear-search-btn"
-              onClick={handleClearSearch}
-              aria-label="Clear search"
-              type="button"
-            >
-              <X size={18} />
-            </button>
-          )}
-        </div>
+      <PageHeader
+        eyebrow="Library"
+        title="Articles"
+        description="Search, filter, and explore AI explanations and tutorials across difficulty levels."
+        rightSlot={(
+          <div className="search-bar">
+            <Search size={20} className="search-icon" aria-hidden="true" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Search articles"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ paddingRight: searchQuery ? '3rem' : '1rem' }}
+            />
+            {searchQuery && (
+              <button
+                className="clear-search-btn"
+                onClick={handleClearSearch}
+                aria-label="Clear search"
+                type="button"
+              >
+                <X size={18} />
+              </button>
+            )}
+          </div>
+        )}
+      >
         <div className="library-filters-row">
           <button
             className={`filter-toggle ${showBookmarks ? 'active' : ''}`}
@@ -183,8 +192,10 @@ export function Library() {
               setShowBookmarks(!showBookmarks);
               setShowRecent(false);
             }}
+            aria-pressed={showBookmarks}
+            type="button"
           >
-            <Bookmark size={16} />
+            <Bookmark size={16} aria-hidden="true" />
             Bookmarks
           </button>
           <button
@@ -193,6 +204,8 @@ export function Library() {
               setShowRecent(!showRecent);
               setShowBookmarks(false);
             }}
+            aria-pressed={showRecent}
+            type="button"
           >
             Recent
           </button>
@@ -220,7 +233,7 @@ export function Library() {
             {(searchQuery || selectedTags.length > 0) && ' matching your criteria'}
           </p>
         )}
-      </header>
+      </PageHeader>
 
       <div className="library-content">
         <aside className="filters">

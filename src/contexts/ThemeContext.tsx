@@ -1,16 +1,18 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useEffect, useState, useMemo, ReactNode } from 'react';
 
-type ThemeMode = 'light' | 'dark' | 'system';
-type EffectiveTheme = 'light' | 'dark';
+export type ThemeMode = 'light' | 'dark' | 'system';
+export type EffectiveTheme = 'light' | 'dark';
 
-interface ThemeContextType {
+export interface ThemeContextType {
   mode: ThemeMode;
   effectiveTheme: EffectiveTheme;
   setMode: (mode: ThemeMode) => void;
   toggleTheme: () => void;
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+// Context must be exported for useTheme hook to access it
+// eslint-disable-next-line react-refresh/only-export-components
+export const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const THEME_KEY = 'theme-mode';
 
@@ -28,32 +30,21 @@ function getInitialMode(): ThemeMode {
   return 'system';
 }
 
-function getEffectiveTheme(mode: ThemeMode): EffectiveTheme {
-  if (mode === 'system') {
-    return getSystemTheme();
-  }
-  return mode;
-}
-
 interface ThemeProviderProps {
   children: ReactNode;
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [mode, setModeState] = useState<ThemeMode>(() => {
-    const initialMode = getInitialMode();
-    return initialMode;
-  });
-  const [effectiveTheme, setEffectiveTheme] = useState<EffectiveTheme>(() => {
-    const initialMode = getInitialMode();
-    return getEffectiveTheme(initialMode);
-  });
-
-  // Update effective theme when mode changes
-  useEffect(() => {
-    const effective = getEffectiveTheme(mode);
-    setEffectiveTheme(effective);
-  }, [mode]);
+  const [mode, setModeState] = useState<ThemeMode>(() => getInitialMode());
+  const [systemTheme, setSystemTheme] = useState<EffectiveTheme>(() => getSystemTheme());
+  
+  // Compute effective theme from mode and system theme
+  const effectiveTheme = useMemo<EffectiveTheme>(() => {
+    if (mode === 'system') {
+      return systemTheme;
+    }
+    return mode;
+  }, [mode, systemTheme]);
 
   // Apply theme to document
   useEffect(() => {
@@ -67,8 +58,8 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     
-    const handleChange = (e: MediaQueryListEvent) => {
-      setEffectiveTheme(e.matches ? 'dark' : 'light');
+    const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
+      setSystemTheme(e.matches ? 'dark' : 'light');
     };
 
     // Modern browsers
@@ -109,12 +100,3 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     </ThemeContext.Provider>
   );
 }
-
-export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
-}
-

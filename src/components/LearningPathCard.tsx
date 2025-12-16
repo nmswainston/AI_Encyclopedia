@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { BookOpen, Clock, ArrowRight, AlertTriangle } from "lucide-react";
 import { getScriptBySlug } from "../lib/content";
 import type { LearningPath } from "../lib/learningPaths";
+import { ContentCard } from "./ContentCard";
 
 interface LearningPathCardProps {
   path: LearningPath;
@@ -44,30 +45,37 @@ export function LearningPathCard({ path }: LearningPathCardProps) {
   const firstAvailable = availableSteps[0];
 
   return (
-    <div className="learning-path-card">
-      <div className="learning-path-header">
-        <BookOpen size={24} aria-hidden="true" />
-        <div>
-          <h3>{path.title}</h3>
-          <p className="learning-path-description">{path.description}</p>
-        </div>
-      </div>
-
-      <div className="learning-path-meta">
-        <span className={`learning-path-level badge-level-${path.level}`}>
-          {path.level}
-        </span>
-
-        <span className="learning-path-time">
-          <Clock size={14} aria-hidden="true" />
-          <span>{displayMinutes} min</span>
-        </span>
-
-        <span className="learning-path-count">
-          {availableSteps.length}/{path.slugOrder.length} lessons
-        </span>
-      </div>
-
+    <ContentCard
+      className="learning-path-card"
+      icon={<BookOpen size={24} aria-hidden="true" />}
+      title={path.title}
+      description={<span className="learning-path-description">{path.description}</span>}
+      meta={
+        <>
+          <span className={`meta-pill learning-path-level badge-level-${path.level}`}>
+            {path.level}
+          </span>
+          <span className="meta-pill learning-path-time">
+            <Clock size={14} aria-hidden="true" />
+            <span>{displayMinutes} min</span>
+          </span>
+          <span className="meta-pill learning-path-count">
+            {availableSteps.length}/{path.slugOrder.length} lessons
+          </span>
+        </>
+      }
+      cta={
+        firstAvailable && (
+          <Link
+            to={`/scripts/${firstAvailable.slug}`}
+            className="content-card-cta-primary learning-path-start-button"
+          >
+            <span>Start Learning Path</span>
+            <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        )
+      }
+    >
       {missingSteps.length > 0 && (
         <div className="learning-path-warning" role="note">
           <AlertTriangle size={16} aria-hidden="true" />
@@ -102,13 +110,6 @@ export function LearningPathCard({ path }: LearningPathCardProps) {
           })}
         </ol>
       </div>
-
-      {firstAvailable && (
-        <Link to={`/scripts/${firstAvailable.slug}`} className="learning-path-start-button">
-          Start Learning Path
-          <ArrowRight size={16} aria-hidden="true" />
-        </Link>
-      )}
-    </div>
+    </ContentCard>
   );
 }

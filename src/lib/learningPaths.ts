@@ -45,14 +45,6 @@ export const learningPaths: LearningPath[] = [
   }
 ];
 
-export function getLearningPathById(id: string): LearningPath | undefined {
-  return learningPaths.find((p) => p.id === id);
-}
-
 export function getAllLearningPaths(): LearningPath[] {
   return learningPaths;
-}
-
-export function getLearningPathsByLevel(level: LearningPath["level"]): LearningPath[] {
-  return learningPaths.filter((p) => p.level === level);
 }

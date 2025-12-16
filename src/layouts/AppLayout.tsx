@@ -67,10 +67,10 @@ export function AppLayout() {
           ) : (
             <Link to="/" className="back-link">Back to Library</Link>
           )}
-          <nav className="app-nav">
+          <nav className="app-nav" aria-label="Main navigation">
             <Link to="/" className={isHome ? 'active' : ''}>Articles</Link>
             <Link to="/learning-paths" className={isLearningPaths ? 'active' : ''}>
-              <BookOpen size={16} />
+              <BookOpen size={16} aria-hidden="true" />
               Learning Paths
             </Link>
           </nav>

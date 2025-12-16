@@ -1,31 +1,27 @@
-import { useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { useEffect, useState, useRef } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { useEffect } from 'react';
 import { getScriptBySlug } from '../lib/content';
 import { addToHistory } from '../lib/storage';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
 import { TableOfContents } from '../components/TableOfContents';
 import { RelatedArticles } from '../components/RelatedArticles';
 import { ReadingProgress } from '../components/ReadingProgress';
-import { BookmarkButton } from '../components/BookmarkButton';
 import { ShareButtons } from '../components/ShareButtons';
 import { ArticleNavigation } from '../components/ArticleNavigation';
 import { ReadingControls } from '../components/ReadingControls';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { KeyboardShortcuts } from '../components/KeyboardShortcuts';
 import { Clock, Calendar, User, Edit } from 'lucide-react';
+import { PageHeader } from '../components/PageHeader';
 
 export function ScriptDetail() {
   const { slug } = useParams<{ slug: string }>();
   const script = slug ? getScriptBySlug(slug) : undefined;
-  const [readingMode, setReadingMode] = useState(false);
-  const readingModeRef = useRef(false);
 
   useEffect(() => {
     if (script && slug) {
       addToHistory(slug, script.meta.title);
-      // Update document title for SEO
-      document.title = `${script.meta.title} | AI Encyclopedia`;
+      // Note: document.title is handled by AppLayout
     }
   }, [script, slug]);
 
@@ -38,76 +34,69 @@ export function ScriptDetail() {
     );
   }
 
-  const handleReadingModeChange = (enabled: boolean) => {
-    readingModeRef.current = enabled;
-    setReadingMode(enabled);
-  };
-
-  const handleReadingModeToggle = () => {
-    // Trigger the ReadingControls to toggle
-    const readingModeButton = document.querySelector('.reading-mode-button') as HTMLButtonElement;
-    if (readingModeButton) {
-      readingModeButton.click();
-    }
-  };
-
   return (
     <>
-      <KeyboardShortcuts onReadingModeToggle={handleReadingModeToggle} />
+      <KeyboardShortcuts />
       <ReadingProgress />
-      <div className={`script-detail-page ${readingMode ? 'reading-mode' : ''}`}>
+      <div className="script-detail-page">
         <Breadcrumbs script={script} />
         
         <article className="script-article">
-          <header className="script-header">
-            <div className="script-header-top">
-              <h1>{script.meta.title}</h1>
-              <div className="script-actions">
-                <BookmarkButton slug={script.slug} />
-                <ReadingControls onReadingModeChange={handleReadingModeChange} />
-              </div>
-            </div>
-            
-            <div className="script-meta-detail">
-              <span className={`script-level badge-level-${script.meta.level}`}>
-                {script.meta.level}
-              </span>
-              <span className="script-minutes">
-                <Clock size={14} />
-                {script.meta.minutes} min
-              </span>
-              <span className="script-date">
-                <Calendar size={14} />
-                {script.meta.date}
-              </span>
-              {script.meta.lastUpdated && (
-                <span className="script-updated">
-                  <Edit size={14} />
-                  Updated {script.meta.lastUpdated}
+          <PageHeader
+            eyebrow={script.meta.category ?? 'Article'}
+            title={script.meta.title}
+            bookmarkSlug={script.slug}
+            rightSlot={(
+              <ReadingControls
+              />
+            )}
+            meta={(
+              <>
+                <span className={`meta-pill script-level badge-level-${script.meta.level}`}>
+                  {script.meta.level}
                 </span>
-              )}
-              {script.meta.author && (
-                <span className="script-author">
-                  <User size={14} />
-                  {script.meta.author}
+                <span className="meta-pill script-minutes">
+                  <Clock size={14} aria-hidden="true" />
+                  {script.meta.minutes} min
                 </span>
-              )}
-            </div>
-            
+                <span className="meta-pill script-date">
+                  <Calendar size={14} aria-hidden="true" />
+                  {script.meta.date}
+                </span>
+                {script.meta.lastUpdated && (
+                  <span className="meta-pill script-updated">
+                    <Edit size={14} aria-hidden="true" />
+                    Updated {script.meta.lastUpdated}
+                  </span>
+                )}
+                {script.meta.author && (
+                  <span className="meta-pill script-author">
+                    <User size={14} aria-hidden="true" />
+                    {script.meta.author}
+                  </span>
+                )}
+              </>
+            )}
+          >
             <div className="script-tags">
               {script.meta.tags.map(tag => (
-                <span key={tag} className={`tag tag-${tag.replace(/\s+/g, '-').toLowerCase()}`}>{tag}</span>
+                <span
+                  key={tag}
+                  className={`tag tag-${tag.replace(/\s+/g, '-').toLowerCase()}`}
+                >
+                  {tag}
+                </span>
               ))}
             </div>
-            
-            <p className="script-summary-detail">{script.meta.summary}</p>
-            
-            <ShareButtons 
+
+            <p className="page-header-description">{script.meta.summary}</p>
+
+            <ShareButtons
               url={`/scripts/${script.slug}`}
               title={script.meta.title}
               summary={script.meta.summary}
             />
-          </header>
+          </PageHeader>
 
           <div className="script-content-wrapper">
             <aside className="script-sidebar">

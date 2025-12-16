@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Hash } from 'lucide-react';
 
 interface Heading {
@@ -12,15 +12,12 @@ interface TableOfContentsProps {
 }
 
 export function TableOfContents({ content }: TableOfContentsProps) {
-  const [headings, setHeadings] = useState<Heading[]>([]);
-  const [activeId, setActiveId] = useState<string>('');
-
-  // Extract headings when content changes
-  useEffect(() => {
+  // Extract headings from content using useMemo to avoid re-renders
+  const headings = useMemo<Heading[]>(() => {
     const headingRegex = /^(#{1,6})\s+(.+)$/gm;
     const matches = Array.from(content.matchAll(headingRegex));
     
-    const extracted: Heading[] = matches.map((match) => {
+    return matches.map((match) => {
       const level = match[1].length;
       const text = match[2].trim();
       // Generate ID from text
@@ -33,9 +30,32 @@ export function TableOfContents({ content }: TableOfContentsProps) {
       
       return { id, text, level };
     });
-
-    setHeadings(extracted);
   }, [content]);
+
+  const [activeId, setActiveId] = useState<string>('');
+
+  // Reset activeId when content changes (i.e., when navigating to a new page)
+  useEffect(() => {
+    // When navigating to a new page, reset to first heading to highlight top of TOC
+    if (headings.length > 0) {
+      // Small delay to ensure scroll has completed
+      const timeoutId = setTimeout(() => {
+        // Check if we're at the top of the page
+        if (window.scrollY < 100) {
+          setActiveId(headings[0].id);
+        } else {
+          setActiveId('');
+        }
+      }, 150);
+      return () => clearTimeout(timeoutId);
+    } else {
+      // Use setTimeout to avoid synchronous setState in effect
+      const timeoutId = setTimeout(() => {
+        setActiveId('');
+      }, 0);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [headings]);
 
   // Set up intersection observer when headings change
   useEffect(() => {
@@ -52,20 +72,27 @@ export function TableOfContents({ content }: TableOfContentsProps) {
       { rootMargin: '-20% 0% -70% 0%' }
     );
 
+    // Track observed elements for proper cleanup
+    const observedElements: Element[] = [];
+
     // Observe all headings - use setTimeout to ensure DOM is ready
     const timeoutId = setTimeout(() => {
       headings.forEach((heading) => {
         const element = document.getElementById(heading.id);
-        if (element) observer.observe(element);
+        if (element) {
+          observer.observe(element);
+          observedElements.push(element);
+        }
       });
     }, 100);
 
     return () => {
       clearTimeout(timeoutId);
-      headings.forEach((heading) => {
-        const element = document.getElementById(heading.id);
-        if (element) observer.unobserve(element);
+      // Only unobserve elements that were actually observed
+      observedElements.forEach((element) => {
+        observer.unobserve(element);
       });
+      observer.disconnect();
     };
   }, [headings]);
 
@@ -80,9 +107,9 @@ export function TableOfContents({ content }: TableOfContentsProps) {
   };
 
   return (
-    <nav className="table-of-contents">
+    <nav className="table-of-contents" aria-label="Table of contents">
       <div className="toc-header">
-        <Hash size={18} />
+        <Hash size={18} aria-hidden="true" />
         <h3>Table of Contents</h3>
       </div>
       <ul className="toc-list">

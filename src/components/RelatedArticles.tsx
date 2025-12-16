@@ -14,7 +14,7 @@ export function RelatedArticles({ currentSlug }: RelatedArticlesProps) {
   return (
     <section className="related-articles">
       <h2 className="related-articles-title">
-        <ArrowRight size={20} />
+        <ArrowRight size={20} aria-hidden="true" />
         Related Articles
       </h2>
       <div className="related-articles-grid">
@@ -23,10 +23,10 @@ export function RelatedArticles({ currentSlug }: RelatedArticlesProps) {
             <h3>{script.meta.title}</h3>
             <p className="related-article-summary">{script.meta.summary}</p>
             <div className="related-article-meta">
-              <span className={`script-level badge-level-${script.meta.level}`}>
+              <span className={`meta-pill script-level badge-level-${script.meta.level}`}>
                 {script.meta.level}
               </span>
-              <span className="script-minutes">{script.meta.minutes} min</span>
+              <span className="meta-pill script-minutes">{script.meta.minutes} min</span>
             </div>
           </Link>
         ))}

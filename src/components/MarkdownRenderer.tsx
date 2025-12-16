@@ -5,7 +5,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../contexts/useTheme';
 import { Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 import 'katex/dist/katex.min.css';
@@ -13,6 +13,10 @@ import 'katex/dist/katex.min.css';
 interface MarkdownRendererProps {
   content: string;
 }
+
+// Note: react-markdown component props use `any` because the library's
+// component prop types are complex and don't export perfect TypeScript types
+// for custom components. The props are validated at runtime by react-markdown.
 
 export function MarkdownRenderer({ content }: MarkdownRendererProps) {
   const { effectiveTheme } = useTheme();
@@ -24,8 +28,8 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
       await navigator.clipboard.writeText(code);
       setCopiedCode(id);
       setTimeout(() => setCopiedCode(null), 2000);
-    } catch (err) {
-      console.error('Failed to copy code:', err);
+    } catch {
+      // Silently ignore clipboard errors (e.g. unsupported browser)
     }
   };
 
@@ -34,10 +38,11 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
       remarkPlugins={[remarkGfm, remarkMath]}
       rehypePlugins={[rehypeKatex, rehypeRaw]}
       components={{
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         code({ node: _node, inline, className, children, ...props }: any) {
           const match = /language-(\w+)/.exec(className || '');
           const codeString = String(children).replace(/\n$/, '');
-          const codeId = `code-${Math.random().toString(36).substr(2, 9)}`;
+          const codeId = `code-${Math.random().toString(36).slice(2, 11)}`;
 
           if (!inline && match) {
             return (
@@ -81,6 +86,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
           );
         },
         // Add IDs to headings for TOC
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         h1({ node: _node, children, ...props }: any) {
           const id = String(children)
             .toLowerCase()
@@ -90,6 +96,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             .trim();
           return <h1 id={id} {...props}>{children}</h1>;
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         h2({ node: _node, children, ...props }: any) {
           const id = String(children)
             .toLowerCase()
@@ -99,6 +106,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             .trim();
           return <h2 id={id} {...props}>{children}</h2>;
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         h3({ node: _node, children, ...props }: any) {
           const id = String(children)
             .toLowerCase()
@@ -108,6 +116,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             .trim();
           return <h3 id={id} {...props}>{children}</h3>;
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         h4({ node: _node, children, ...props }: any) {
           const id = String(children)
             .toLowerCase()
@@ -117,6 +126,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             .trim();
           return <h4 id={id} {...props}>{children}</h4>;
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         h5({ node: _node, children, ...props }: any) {
           const id = String(children)
             .toLowerCase()
@@ -126,6 +136,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             .trim();
           return <h5 id={id} {...props}>{children}</h5>;
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         h6({ node: _node, children, ...props }: any) {
           const id = String(children)
             .toLowerCase()

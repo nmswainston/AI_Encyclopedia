@@ -17,7 +17,9 @@ export function TagFilter({ tags, selectedTags, onTagToggle }: TagFilterProps) {
             onClick={() => {
               selectedTags.forEach(tag => onTagToggle(tag));
             }}
+            aria-label="Clear all tag filters"
             title="Clear all filters"
+            type="button"
           >
             Clear
           </button>
