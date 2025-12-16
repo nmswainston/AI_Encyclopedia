@@ -32,8 +32,8 @@ export function PageHeader({
         <div className="page-header-left">
           {icon && <div className="page-header-icon">{icon}</div>}
           <div className="page-header-text">
-            {eyebrow && <div className="page-header-eyebrow">{eyebrow}</div>}
-            <h1>{title}</h1>
+            {eyebrow && <div className="page-header-eyebrow typography-eyebrow">{eyebrow}</div>}
+            <h1 className="typography-page-title typography-gradient-text">{title}</h1>
             {description && (
               <p className="page-header-description">{description}</p>
             )}

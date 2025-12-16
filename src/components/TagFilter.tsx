@@ -5,27 +5,12 @@ interface TagFilterProps {
 }
 
 export function TagFilter({ tags, selectedTags, onTagToggle }: TagFilterProps) {
-  const hasSelectedTags = selectedTags.length > 0;
-
   return (
     <div className="tag-filter">
       <div className="tag-filter-header">
-        <h3>Filter by Tags</h3>
-        {hasSelectedTags && (
-          <button
-            className="clear-tags-btn"
-            onClick={() => {
-              selectedTags.forEach(tag => onTagToggle(tag));
-            }}
-            aria-label="Clear all tag filters"
-            title="Clear all filters"
-            type="button"
-          >
-            Clear
-          </button>
-        )}
+        <h3>Tags</h3>
       </div>
-      <div className="tag-list">
+      <div className="tag-list custom-scrollbar">
         {tags.length === 0 ? (
           <p className="no-tags">No tags available</p>
         ) : (
@@ -44,4 +29,3 @@ export function TagFilter({ tags, selectedTags, onTagToggle }: TagFilterProps) {
     </div>
   );
 }
-

@@ -108,10 +108,10 @@ export function ScriptDetail() {
                 <div className="prerequisites-box">
                   <h3>Prerequisites</h3>
                   <ul>
-                    {script.meta.prerequisites.map((prereq, idx) => {
+                    {script.meta.prerequisites.map((prereq) => {
                       const prereqScript = getScriptBySlug(prereq);
                       return (
-                        <li key={idx}>
+                        <li key={prereq}>
                           {prereqScript ? (
                             <Link to={`/scripts/${prereqScript.slug}`}>{prereqScript.meta.title}</Link>
                           ) : (

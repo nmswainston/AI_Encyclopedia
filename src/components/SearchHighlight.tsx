@@ -14,9 +14,9 @@ export function SearchHighlight({ text, query }: SearchHighlightProps) {
     <>
       {parts.map((part, index) => 
         part.toLowerCase() === query.toLowerCase() ? (
-          <mark key={index} className="search-highlight">{part}</mark>
+          <mark key={`${part}-${index}`} className="search-highlight">{part}</mark>
         ) : (
-          part
+          <span key={`${part}-${index}`}>{part}</span>
         )
       )}
     </>

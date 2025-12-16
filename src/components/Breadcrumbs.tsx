@@ -30,7 +30,7 @@ export function Breadcrumbs({ script }: BreadcrumbsProps) {
           <span className="breadcrumb-item breadcrumb-category">{script.meta.category}</span>
         </>
       )}
-      <ChevronRight size={16} className="breadcrumb-separator" />
+      <ChevronRight size={16} className="breadcrumb-separator" aria-hidden="true" />
       <span className="breadcrumb-item breadcrumb-current">{script.meta.title}</span>
     </nav>
   );

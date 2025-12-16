@@ -78,4 +78,3 @@ export function setFontSize(size: number): void {
   }
 }
 
-// Reading mode has been removed; no getters/setters needed.

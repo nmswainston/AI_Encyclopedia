@@ -1,6 +1,6 @@
-# AI Encyclopedia
+# Signal Over Noise
 
-A comprehensive learning resource for AI and machine learning concepts, built with React, TypeScript, and modern web technologies.
+Clear, practical explanations of how AI works. A comprehensive learning resource for AI and machine learning concepts, built with React, TypeScript, and modern web technologies.
 
 ## Features
 
@@ -78,7 +78,8 @@ src/
 ├── layouts/         # Layout components
 ├── lib/             # Utilities and data management
 ├── pages/           # Page components
-└── main.tsx         # Entry point
+├── main.tsx         # Entry point
+└── vite-env.d.ts    # Vite type definitions
 ```
 
 ## Adding Content

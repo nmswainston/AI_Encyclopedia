@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { X, Search, Bookmark } from 'lucide-react';
+import { X, Search, Bookmark, Filter } from 'lucide-react';
 import { ScriptCard } from '../components/ScriptCard';
 import { TagFilter } from '../components/TagFilter';
 import { CategoryFilter } from '../components/CategoryFilter';
@@ -26,11 +26,12 @@ export function Library() {
   });
   const [showBookmarks, setShowBookmarks] = useState(false);
   const [showRecent, setShowRecent] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   // getAllScripts() returns the same array reference (module-level const)
   const allScripts = getAllScripts();
 
-  // Get all unique tags - memoized for performance
+  // Get all unique tags - memoized since allScripts is stable
   const allTags = useMemo(() => {
     const tagSet = new Set<string>();
     allScripts.forEach(script => {
@@ -39,7 +40,6 @@ export function Library() {
     return Array.from(tagSet).sort();
   }, [allScripts]);
 
-  // getAllCategories() is computed from the same const array, so no memoization needed
   const allCategories = getAllCategories();
 
   // Filter scripts based on search, tags, and category
@@ -154,13 +154,23 @@ export function Library() {
     setSearchQuery('');
   };
 
+  const handleClearAllFilters = () => {
+    setSearchQuery('');
+    setSelectedTags([]);
+    setSelectedCategory(null);
+    setShowBookmarks(false);
+    setShowRecent(false);
+  };
+
+  const hasActiveFilters = searchQuery || selectedTags.length > 0 || selectedCategory || showBookmarks || showRecent;
+
   return (
     <>
       <KeyboardShortcuts onSearchFocus={handleFocusSearch} />
       <PageHeader
         eyebrow="Library"
         title="Articles"
-        description="Search, filter, and explore AI explanations and tutorials across difficulty levels."
+        description="Browse clear explanations, filter by topic, and save what you want to revisit."
         rightSlot={(
           <div className="search-bar">
             <Search size={20} className="search-icon" aria-hidden="true" />
@@ -170,7 +180,7 @@ export function Library() {
               placeholder="Search articles"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ paddingRight: searchQuery ? '3rem' : '1rem' }}
+              className={searchQuery ? 'search-bar-input-with-clear' : ''}
             />
             {searchQuery && (
               <button
@@ -185,30 +195,37 @@ export function Library() {
           </div>
         )}
       >
-        <div className="library-filters-row">
-          <button
-            className={`filter-toggle ${showBookmarks ? 'active' : ''}`}
-            onClick={() => {
-              setShowBookmarks(!showBookmarks);
-              setShowRecent(false);
-            }}
-            aria-pressed={showBookmarks}
-            type="button"
-          >
-            <Bookmark size={16} aria-hidden="true" />
-            Bookmarks
-          </button>
-          <button
-            className={`filter-toggle ${showRecent ? 'active' : ''}`}
-            onClick={() => {
-              setShowRecent(!showRecent);
-              setShowBookmarks(false);
-            }}
-            aria-pressed={showRecent}
-            type="button"
-          >
-            Recent
-          </button>
+        <div className="library-header-controls">
+          <div className="library-pills-row">
+            <button
+              className={`library-pill ${showBookmarks ? 'active' : ''}`}
+              onClick={() => {
+                setShowBookmarks(!showBookmarks);
+                setShowRecent(false);
+              }}
+              aria-pressed={showBookmarks}
+              type="button"
+            >
+              <Bookmark size={16} aria-hidden="true" />
+              Bookmarks
+            </button>
+            <button
+              className={`library-pill ${showRecent ? 'active' : ''}`}
+              onClick={() => {
+                setShowRecent(!showRecent);
+                setShowBookmarks(false);
+              }}
+              aria-pressed={showRecent}
+              type="button"
+            >
+              Recent
+            </button>
+          </div>
+          {filteredScripts.length > 0 && (
+            <p className="results-count">
+              {filteredScripts.length} {filteredScripts.length === 1 ? 'article' : 'articles'} found
+            </p>
+          )}
         </div>
         {/* Always render to prevent layout shift - space reserved via min-height in CSS */}
         <div className="selected-tags-chips">
@@ -226,19 +243,46 @@ export function Library() {
             </span>
           ))}
         </div>
-        {/* Always render to prevent layout shift - stable spacing maintained */}
-        <p className="results-count">
-          {filteredScripts.length > 0 && (
-            <>
-              {filteredScripts.length} {filteredScripts.length === 1 ? 'script' : 'scripts'} found
-              {(searchQuery || selectedTags.length > 0) && ' matching your criteria'}
-            </>
-          )}
-        </p>
       </PageHeader>
 
       <div className="library-content">
-        <aside className="filters">
+        <button
+          className="filters-toggle-mobile"
+          onClick={() => setShowFilters(!showFilters)}
+          aria-label="Toggle filters"
+          type="button"
+        >
+          <Filter size={18} aria-hidden="true" />
+          Filters
+          {hasActiveFilters && <span className="filters-badge">{selectedTags.length + (selectedCategory ? 1 : 0) + (showBookmarks ? 1 : 0) + (showRecent ? 1 : 0)}</span>}
+        </button>
+        {showFilters && (
+          <div className="filters-backdrop" onClick={() => setShowFilters(false)} aria-hidden="true" />
+        )}
+        <aside className={`filters ${showFilters ? 'filters-open' : ''}`}>
+          <div className="filters-header">
+            <h3 className="filters-title">Filter by topic</h3>
+            <div className="filters-header-actions">
+              {hasActiveFilters && (
+                <button
+                  className="filters-clear-all"
+                  onClick={handleClearAllFilters}
+                  aria-label="Clear all filters"
+                  type="button"
+                >
+                  Clear filters
+                </button>
+              )}
+              <button
+                className="filters-close-mobile"
+                onClick={() => setShowFilters(false)}
+                aria-label="Close filters"
+                type="button"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+            </div>
+          </div>
           {allCategories.length > 0 && (
             <CategoryFilter
               categories={allCategories}
@@ -253,20 +297,20 @@ export function Library() {
           />
         </aside>
 
-        <main className="scripts-grid">
+        <section className="scripts-grid" aria-label="Articles">
           {filteredScripts.length === 0 ? (
             <p className="no-results">
-              No scripts found matching your criteria.
-              {(searchQuery || selectedTags.length > 0) && (
-                <button
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedTags([]);
-                  }}
-                  className="clear-filters-btn"
-                >
-                  Clear filters
-                </button>
+              No articles found matching your criteria.
+              {hasActiveFilters && (
+                <>
+                  <br />
+                  <button
+                    onClick={handleClearAllFilters}
+                    className="clear-filters-btn clear-filters-btn-inline"
+                  >
+                    Clear filters
+                  </button>
+                </>
               )}
             </p>
           ) : (
@@ -274,7 +318,7 @@ export function Library() {
               <ScriptCard key={script.slug} script={script} searchQuery={searchQuery} />
             ))
           )}
-        </main>
+        </section>
       </div>
     </>
   );

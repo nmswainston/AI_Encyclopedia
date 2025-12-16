@@ -22,7 +22,7 @@ function filenameToSlug(pathname: string): string {
 
 /**
  * Browser-compatible frontmatter parser.
- * Parses YAML frontmatter between --- markers without Node.js Buffer/fs dependencies.
+ * Parses YAML frontmatter between --- markers without Node.js dependencies.
  * 
  * Note: `data` uses `unknown` instead of strict types because YAML frontmatter
  * can contain arbitrary values. The data is validated against ScriptMetaSchema
@@ -200,10 +200,6 @@ export function searchScripts(query: string): Script[] {
     if (script.meta.tags.some(tag => tag.toLowerCase().includes(lowerQuery))) return true;
     return false;
   });
-}
-
-export function getScriptsByCategory(category: string): Script[] {
-  return allScripts.filter(s => s.meta.category === category);
 }
 
 export function getAllCategories(): string[] {

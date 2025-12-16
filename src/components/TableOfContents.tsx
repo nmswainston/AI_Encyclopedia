@@ -113,9 +113,9 @@ export function TableOfContents({ content }: TableOfContentsProps) {
         <h3>Table of Contents</h3>
       </div>
       <ul className="toc-list">
-        {headings.map((heading, index) => (
+        {headings.map((heading) => (
           <li
-            key={index}
+            key={heading.id}
             className={`toc-item toc-level-${heading.level} ${activeId === heading.id ? 'active' : ''}`}
           >
             <a

@@ -1,6 +1,8 @@
 import { Outlet, useLocation, Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import ThemeToggle from '../components/ThemeToggle';
+import { Footer } from '../components/Footer';
+import { BackToTop } from '../components/BackToTop';
 import { getScriptBySlug } from '../lib/content';
 import { BookOpen } from 'lucide-react';
 
@@ -12,6 +14,7 @@ export function AppLayout() {
   
   // Determine container class based on route
   const containerClass = isHome ? 'library-page' : isScriptDetail ? 'script-detail' : isLearningPaths ? 'learning-paths-page' : '';
+  const layoutClass = ['app-shell', containerClass].filter(Boolean).join(' ');
 
   // Update meta tags for SEO
   useEffect(() => {
@@ -21,7 +24,7 @@ export function AppLayout() {
       
       if (script) {
         // Update meta tags
-        document.title = `${script.meta.title} | AI Encyclopedia`;
+        document.title = `${script.meta.title} | Signal Over Noise`;
         
         // Update or create meta description
         let metaDesc = document.querySelector('meta[name="description"]');
@@ -52,32 +55,37 @@ export function AppLayout() {
         }
       }
     } else {
-      document.title = 'AI Encyclopedia | Comprehensive AI Learning Resources';
+      document.title = 'Signal Over Noise | Clear, practical explanations of how AI works';
     }
   }, [location, isScriptDetail]);
 
   return (
-    <div className={containerClass}>
-      <div className="app-header">
-        <div className="app-header-left">
-          {isHome ? (
-            <Link to="/" className="app-logo">
-              <h1>AI Encyclopedia</h1>
-            </Link>
-          ) : (
-            <Link to="/" className="back-link">Back to Library</Link>
-          )}
-          <nav className="app-nav" aria-label="Main navigation">
-            <Link to="/" className={isHome ? 'active' : ''}>Articles</Link>
-            <Link to="/learning-paths" className={isLearningPaths ? 'active' : ''}>
-              <BookOpen size={16} aria-hidden="true" />
-              Learning Paths
-            </Link>
-          </nav>
+    <div className={layoutClass}>
+      <main className="app-main">
+        <div className="app-header">
+          <div className="app-header-left">
+            {isHome ? (
+              <Link to="/" className="app-logo">
+                <span className="typography-brand-title typography-gradient-text">Signal Over Noise</span>
+                <p className="app-tagline">Clear, practical explanations of how AI works</p>
+              </Link>
+            ) : (
+              <Link to="/" className="back-link">Back to Library</Link>
+            )}
+            <nav className="app-nav" aria-label="Main navigation">
+              <Link to="/" className={isHome ? 'active' : ''}>Library</Link>
+              <Link to="/learning-paths" className={isLearningPaths ? 'active' : ''}>
+                <BookOpen size={16} aria-hidden="true" />
+                Learning Paths
+              </Link>
+            </nav>
+          </div>
+          <ThemeToggle />
         </div>
-        <ThemeToggle />
-      </div>
-      <Outlet />
+        <Outlet />
+      </main>
+      <Footer />
+      <BackToTop />
     </div>
   );
 }
