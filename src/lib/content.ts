@@ -37,7 +37,7 @@ function parseFrontmatter(content: string): { data: Record<string, any>, content
   // Simple YAML parser for our use case
   frontmatter.split('\n').forEach(line => {
     const trimmed = line.trim();
-    if (!trimmed) return;
+    if (!trimmed || trimmed.startsWith('#')) return;
     
     const colonIndex = trimmed.indexOf(':');
     if (colonIndex === -1) return;
@@ -47,21 +47,27 @@ function parseFrontmatter(content: string): { data: Record<string, any>, content
     
     // Parse arrays (format: ["item1", "item2"] or [item1, item2])
     if (value.startsWith('[') && value.endsWith(']')) {
-      const arrayContent = value.slice(1, -1);
-      data[key] = arrayContent
-        .split(',')
-        .map(item => item.trim().replace(/^["']|["']$/g, ''))
-        .filter(item => item.length > 0);
+      const arrayContent = value.slice(1, -1).trim();
+      if (arrayContent === '') {
+        data[key] = [];
+      } else {
+        data[key] = arrayContent
+          .split(',')
+          .map(item => item.trim().replace(/^["']|["']$/g, ''))
+          .filter(item => item.length > 0);
+      }
     } else {
-      // Remove quotes if present
+      // Remove quotes if present (both single and double)
       if ((value.startsWith('"') && value.endsWith('"')) || 
           (value.startsWith("'") && value.endsWith("'"))) {
         value = value.slice(1, -1);
       }
       
-      // Parse numbers
-      if (!isNaN(Number(value)) && value.trim() !== '' && !isNaN(parseFloat(value))) {
-        data[key] = Number(value);
+      // Parse numbers (integers and floats)
+      const numValue = Number(value);
+      if (value !== '' && !isNaN(numValue) && isFinite(numValue)) {
+        // Check if it's an integer or float
+        data[key] = Number.isInteger(numValue) ? parseInt(value, 10) : parseFloat(value);
       } else {
         // String value
         data[key] = value;
@@ -86,7 +92,9 @@ function buildAllScripts(): Script[] {
     const parsed = ScriptMetaSchema.safeParse(data);
     if (!parsed.success) {
       console.error(`Frontmatter invalid for: ${slug}`);
-      console.error(parsed.error.flatten());
+      console.error('Parsed data:', JSON.stringify(data, null, 2));
+      console.error('Validation errors:', parsed.error.flatten());
+      console.error('Full error:', parsed.error.format());
       throw new Error(`Invalid frontmatter in ${slug}.md`);
     }
 
