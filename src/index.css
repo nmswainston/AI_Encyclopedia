@@ -230,6 +230,8 @@ body {
   gap: var(--spacing-sm);
   margin-top: var(--spacing-md);
   margin-bottom: var(--spacing-sm);
+  /* Prevent layout shift: reserve space even when empty */
+  min-height: 2.5rem;
 }
 
 .tag-chip {
@@ -278,9 +280,12 @@ body {
 
 .results-count {
   margin-top: var(--spacing-md);
+  margin-bottom: 0;
   color: var(--color-text-secondary);
   font-size: 0.9375rem;
   font-weight: 500;
+  /* Prevent layout shift: always reserve space for results count */
+  min-height: 1.5rem;
 }
 
 .clear-filters-btn {

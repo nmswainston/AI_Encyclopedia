@@ -210,29 +210,31 @@ export function Library() {
             Recent
           </button>
         </div>
-        {selectedTags.length > 0 && (
-          <div className="selected-tags-chips">
-            {selectedTags.map(tag => (
-              <span key={tag} className="tag-chip">
-                {tag}
-                <button
-                  className="tag-chip-remove"
-                  onClick={() => handleRemoveTag(tag)}
-                  aria-label={`Remove ${tag} filter`}
-                  type="button"
-                >
-                  <X size={14} />
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
-        {filteredScripts.length > 0 && (
-          <p className="results-count">
-            {filteredScripts.length} {filteredScripts.length === 1 ? 'script' : 'scripts'} found
-            {(searchQuery || selectedTags.length > 0) && ' matching your criteria'}
-          </p>
-        )}
+        {/* Always render to prevent layout shift - space reserved via min-height in CSS */}
+        <div className="selected-tags-chips">
+          {selectedTags.map(tag => (
+            <span key={tag} className="tag-chip">
+              {tag}
+              <button
+                className="tag-chip-remove"
+                onClick={() => handleRemoveTag(tag)}
+                aria-label={`Remove ${tag} filter`}
+                type="button"
+              >
+                <X size={14} />
+              </button>
+            </span>
+          ))}
+        </div>
+        {/* Always render to prevent layout shift - stable spacing maintained */}
+        <p className="results-count">
+          {filteredScripts.length > 0 && (
+            <>
+              {filteredScripts.length} {filteredScripts.length === 1 ? 'script' : 'scripts'} found
+              {(searchQuery || selectedTags.length > 0) && ' matching your criteria'}
+            </>
+          )}
+        </p>
       </PageHeader>
 
       <div className="library-content">
