@@ -65,7 +65,7 @@ export function AppLayout() {
               <h1>AI Encyclopedia</h1>
             </Link>
           ) : (
-            <Link to="/" className="back-link">← Back to Library</Link>
+            <Link to="/" className="back-link">Back to Library</Link>
           )}
           <nav className="app-nav">
             <Link to="/" className={isHome ? 'active' : ''}>Articles</Link>

@@ -1,60 +1,58 @@
-
 export interface LearningPath {
   id: string;
   title: string;
   description: string;
   slugOrder: string[];
-  estimatedTime: number;
-  level: 'beginner' | 'intermediate' | 'advanced';
+  estimatedTime?: number; // optional override, otherwise auto-computed
+  level: "beginner" | "intermediate" | "advanced";
 }
 
-// Define learning paths
 export const learningPaths: LearningPath[] = [
   {
-    id: 'ai-fundamentals',
-    title: 'AI Fundamentals',
-    description: 'Start your AI journey with the basics',
+    id: "ai-foundations",
+    title: "AI Foundations",
+    description: "Understand how modern AI systems learn, improve, and represent meaning.",
     slugOrder: [
-      'getting-started-with-ai',
-      'neural-networks-explained',
-      'backprop-tech'
+      "getting-started-with-ai",
+      "neural-networks-explained",
+      "backprop-tech",
+      "gradient-descent-tech",
+      "embeddings-tech"
     ],
-    estimatedTime: 45,
-    level: 'beginner'
+    level: "beginner"
   },
   {
-    id: 'nlp-path',
-    title: 'Natural Language Processing',
-    description: 'Learn about NLP from basics to advanced concepts',
+    id: "llm-core-systems",
+    title: "How LLMs Actually Work",
+    description: "Build a clear mental model of how large language models generate text and why they fail.",
     slugOrder: [
-      'natural-language-processing-basics',
-      'embeddings-in-plain-english',
-      'rag-for-real-projects'
+      "llm-what-its-doing-tech",
+      "why-models-hallucinate-tech",
+      "tokens-tokenization-tech",
+      "context-windows-working-memory-tech"
     ],
-    estimatedTime: 60,
-    level: 'intermediate'
+    level: "beginner"
   },
   {
-    id: 'practical-ai',
-    title: 'Practical AI Applications',
-    description: 'Build real-world AI applications',
+    id: "reliable-ai-systems",
+    title: "Building Reliable AI Systems",
+    description: "Learn how to control, ground, and scale LLM behavior in real applications.",
     slugOrder: [
-      'prompting-for-reliable-output',
-      'rag-for-real-projects'
+      "prompting-instruction-design-tech",
+      "rag-when-models-need-memory-tech"
     ],
-    estimatedTime: 40,
-    level: 'intermediate'
+    level: "intermediate"
   }
 ];
 
 export function getLearningPathById(id: string): LearningPath | undefined {
-  return learningPaths.find(path => path.id === id);
+  return learningPaths.find((p) => p.id === id);
 }
 
 export function getAllLearningPaths(): LearningPath[] {
   return learningPaths;
 }
 
-export function getLearningPathsByLevel(level: string): LearningPath[] {
-  return learningPaths.filter(path => path.level === level);
+export function getLearningPathsByLevel(level: LearningPath["level"]): LearningPath[] {
+  return learningPaths.filter((p) => p.level === level);
 }
